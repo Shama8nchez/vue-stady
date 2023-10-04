@@ -1,7 +1,8 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/api">Rick and Morty</router-link>
+    <router-link to="/api">Rick and Morty</router-link> |
+    <router-link to="/store">Store</router-link>
   </nav>
   <router-view/>
 </template>

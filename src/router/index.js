@@ -12,6 +12,11 @@ const routes = [
     name: 'api',
     component: () => import('../views/ApiView.vue'),
   },
+  {
+    path: '/store',
+    name: 'store',
+    component: () => import('../views/ApiViewWithStore.vue'),
+  },
 ];
 
 const router = createRouter({

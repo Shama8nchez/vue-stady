@@ -27,6 +27,12 @@ export default {
   padding: 15px 12px;
   border: 1px solid #2c3e50;
   border-radius: 4px;
+  cursor: pointer;
+  transition: 0.35s;
+}
+
+.characters__item:hover {
+  box-shadow: 0 0 6px;
 }
 
 .character__item_name {

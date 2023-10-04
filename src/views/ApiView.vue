@@ -1,23 +1,27 @@
 <template>
   <div>
     <search-form @find="findCharacter"/>
-    <div class="characters">
-      <character-item
-        v-for="character in characters"
-        :character="character"
-        :key="character.id"
-        @show="showModal"
-      />
+    <my-loader v-if="isLoading"/>
+    <div v-else-if="characters.length">
+      <div class="characters">
+        <character-item
+          v-for="character in characters"
+          :character="character"
+          :key="character.id"
+          @show="showModal"
+        />
+      </div>
+      <div class="pagination">
+        <my-button @click="prevPage" :class="currentPage === 1 ? 'disableButton' : ''">
+          Prev
+        </my-button>
+        <span class="currentPage"> {{ currentPage }} / {{ pages }}</span>
+        <my-button @click="nextPage" :class="currentPage === pages ? 'disableButton' : ''">
+          Next
+        </my-button>
+      </div>
     </div>
-    <div class="pagination">
-      <my-button @click="prevPage" :class="currentPage === 1 ? 'disableButton' : ''">
-        Prev
-      </my-button>
-      <span class="currentPage"> {{ currentPage }} / {{ pages }}</span>
-      <my-button @click="nextPage" :class="currentPage === pages ? 'disableButton' : ''">
-        Next
-      </my-button>
-    </div>
+    <div v-else class="notresult">Nothing was found for your request...</div>
   </div>
   <my-modal v-if="isModal" @hide="hideModal">
     <character-detail @click.stop :character="character" />
@@ -43,6 +47,7 @@ export default {
       currentPage: 1,
       pages: 1,
       picked: '',
+      isLoading: false,
     };
   },
   methods: {
@@ -86,14 +91,20 @@ export default {
 
     async getCharacters(name = '', page = '', gender = '') {
       try {
+        this.isLoading = true;
         const responce = await fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}&gender=${gender}`);
         if (responce.status === 200) {
           const data = await responce.json();
           this.characters = data.results;
           this.pages = data.info.pages;
+        } else {
+          this.characters = [];
+          this.pages = 1;
         }
       } catch (e) {
         console.log(e);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -110,6 +121,11 @@ export default {
   gap: 20px;
   max-width: 1200px;
   margin: 50px auto;
+}
+
+.notresult {
+  margin: 50px auto;
+  text-align: center;
 }
 
 .pagination {

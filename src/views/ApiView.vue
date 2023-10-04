@@ -1,6 +1,6 @@
 <template>
   <div>
-    <search-form></search-form>
+    <search-form @find="findCharacter"/>
     <div class="characters">
       <character-item
         v-for="character in characters"
@@ -8,6 +8,15 @@
         :key="character.id"
         @show="showModal"
       />
+    </div>
+    <div class="pagination">
+      <my-button @click="prevPage" :class="currentPage === 1 ? 'disableButton' : ''">
+        Prev
+      </my-button>
+      <span class="currentPage"> {{ currentPage }} / {{ pages }}</span>
+      <my-button @click="nextPage" :class="currentPage === pages ? 'disableButton' : ''">
+        Next
+      </my-button>
     </div>
   </div>
   <my-modal v-if="isModal" @hide="hideModal">
@@ -29,7 +38,10 @@ export default {
     return {
       characters: [],
       isModal: false,
+      query: '',
       character: null,
+      currentPage: 1,
+      pages: 1,
     };
   },
   methods: {
@@ -42,12 +54,37 @@ export default {
       this.isModal = false;
     },
 
-    async getCharacters() {
+    setQuery(name) {
+      this.query = name;
+    },
+
+    findCharacter(name) {
+      this.getCharacters(name);
+      this.setQuery(name);
+      this.currentPage = 1;
+    },
+
+    nextPage() {
+      if (this.currentPage < this.pages) {
+        this.currentPage += 1;
+        this.getCharacters(this.query, this.currentPage);
+      }
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage -= 1;
+        this.getCharacters(this.query, this.currentPage);
+      }
+    },
+
+    async getCharacters(name = '', page = '') {
       try {
-        const responce = await fetch('https://rickandmortyapi.com/api/character');
+        const responce = await fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}`);
         if (responce.status === 200) {
           const data = await responce.json();
           this.characters = data.results;
+          this.pages = data.info.pages;
         }
       } catch (e) {
         console.log(e);
@@ -69,31 +106,12 @@ export default {
   margin: 50px auto;
 }
 
-.avatar {
-  display: block;
-  margin: 0 auto;
-  width: 200px;
+.pagination {
+  margin-bottom: 20px;
 }
 
-.modal__content {
-  display: flex;
-  gap: 10px;
-  width: 500px;
-  height: 250px;
-  padding: 20px;
-  background-color: white;
-  border-radius: 5px;
-}
-
-.info {
-  text-align: left;
-}
-
-.info h2 {
-  margin-bottom: 15px;
-}
-
-.info p {
-  margin-bottom: 10px;
+.currentPage {
+  display: inline-block;
+  width: 50px;
 }
 </style>

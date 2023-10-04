@@ -1,15 +1,30 @@
 <template>
   <form class="searchForm" @submit.prevent>
     <label for="searchQuery">
-      <input type="text" name="searchQuery" class="searchQuery" placeholder="Search..." />
+      <input type="text"
+        name="searchQuery"
+        class="searchQuery"
+        placeholder="Search..."
+        v-model="queryString"
+      />
     </label>
-    <button class="searchButton">SEARCH</button>
+    <my-button @click="findCharacters">SEARCH</my-button>
   </form>
 </template>
 
 <script>
 export default {
   name: 'search-form',
+  data() {
+    return {
+      queryString: '',
+    };
+  },
+  methods: {
+    findCharacters() {
+      this.$emit('find', this.queryString);
+    },
+  },
 };
 </script>
 

@@ -42,6 +42,7 @@ export default {
       character: null,
       currentPage: 1,
       pages: 1,
+      picked: '',
     };
   },
   methods: {
@@ -58,29 +59,34 @@ export default {
       this.query = name;
     },
 
-    findCharacter(name) {
-      this.getCharacters(name);
+    setPick(picked) {
+      this.picked = picked;
+    },
+
+    findCharacter(name, picked) {
+      this.getCharacters(name, 1, picked);
       this.setQuery(name);
+      this.setPick(picked);
       this.currentPage = 1;
     },
 
     nextPage() {
       if (this.currentPage < this.pages) {
         this.currentPage += 1;
-        this.getCharacters(this.query, this.currentPage);
+        this.getCharacters(this.query, this.currentPage, this.picked);
       }
     },
 
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        this.getCharacters(this.query, this.currentPage);
+        this.getCharacters(this.query, this.currentPage, this.picke);
       }
     },
 
-    async getCharacters(name = '', page = '') {
+    async getCharacters(name = '', page = '', gender = '') {
       try {
-        const responce = await fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}`);
+        const responce = await fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}&gender=${gender}`);
         if (responce.status === 200) {
           const data = await responce.json();
           this.characters = data.results;

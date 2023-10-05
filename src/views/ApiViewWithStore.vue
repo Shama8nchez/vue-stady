@@ -33,6 +33,7 @@ import SearchForm from '@/components/SearchForm.vue';
 import CharacterItem from '@/components/CharacterItem.vue';
 import MyModal from '@/components/UI/MyModal.vue';
 import CharacterDetail from '@/components/CharacterDetail.vue';
+import { mapState, mapActions, mapMutations } from 'vuex';
 
 export default {
   components: {
@@ -40,17 +41,28 @@ export default {
   },
   data() {
     return {
-      characters: [],
       isModal: false,
       query: '',
       character: null,
       currentPage: 1,
       pages: 1,
       picked: '',
-      isLoading: false,
     };
   },
+  computed: {
+    ...mapState({
+      characters: (state) => state.api.characters,
+      isLoading: (state) => state.api.isLoading,
+    }),
+  },
   methods: {
+    ...mapMutations({
+
+    }),
+    ...mapActions({
+      getCharacters: 'getCharacters',
+
+    }),
     showModal(character) {
       this.isModal = true;
       this.character = character;
@@ -86,25 +98,6 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
         this.getCharacters(this.query, this.currentPage, this.picke);
-      }
-    },
-
-    async getCharacters(name = '', page = '', gender = '') {
-      try {
-        this.isLoading = true;
-        const responce = await fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}&gender=${gender}`);
-        if (responce.status === 200) {
-          const data = await responce.json();
-          this.characters = data.results;
-          this.pages = data.info.pages;
-        } else {
-          this.characters = [];
-          this.pages = 1;
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        this.isLoading = false;
       }
     },
   },
